@@ -84,3 +84,23 @@ END //
 DELIMITER ;
 -- Teste 
 CALL sp_TitulosPorCategoria('Romance');
+
+
+DELIMITER //
+-- 7. Adição de Livro com Tratamento de Erros
+CREATE PROCEDURE sp_AdicionarLivro (IN novoTitulo VARCHAR(255), IN editoraID INT, IN anoPublicacao INT, IN numPaginas INT, IN categoriaID INT, OUT mensagem VARCHAR(255))
+BEGIN
+    DECLARE tituloExistente INT;
+    SELECT COUNT(*) INTO tituloExistente FROM Livro WHERE Titulo = novoTitulo;
+    IF tituloExistente > 0 THEN
+        SET mensagem = 'Erro: Título já existe.';
+    ELSE
+	    INSERT INTO Livro (Titulo, Editora_ID, Ano_Publicacao, Numero_Paginas, Categoria_ID)
+        VALUES (novoTitulo, editoraID, anoPublicacao, numPaginas, categoriaID);
+        SET mensagem = 'Livro adicionado.';
+    END IF;
+END //
+DELIMITER ;
+-- Teste 
+CALL sp_AdicionarLivro('A freira', 2, 2023, 320, 1, @mensagem);
+SELECT @mensagem;
