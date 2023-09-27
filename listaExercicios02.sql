@@ -139,7 +139,7 @@ BEGIN
     FROM Livro
     INNER JOIN Categoria ON Livro.Categoria_ID = Categoria.Categoria_ID
     WHERE Categoria.Nome = categoriaNome;
-    -- (SELECT COUNT(*) INTO total): Conta o número de registros na tabela 'Livro' da condição que especificarmos.
+    -- (SELECT COUNT(*) INTO tt): Conta o número de registros na tabela 'Livro' da condição que especificarmos.
     -- (FROM Livro): Seleciona a tabela Livro.
     -- (INNER JOIN Categoria ON Livro.Categoria_ID = Categoria.Categoria_ID): Junta a tabela 'Livro' e 'Categoria' com base na coluna 'Categoria_ID', o que relaciona os livros as suas categorias
     -- (WHERE Categoria.Nome = categoriaNome): Filtra os registros onde o nome da categoria corresponde ao valor passado como parâmetro 'categoriaNome', e o resultado da contagem fica armazenado na variável 'tt'.
@@ -149,10 +149,10 @@ BEGIN
     ELSE
         SET possuilivro = 'Não';
     END IF;
-    -- (IF total > 0 THEN): Condição- se o valor da variável 'tt' for maior que 0 o código dentro do ''THEN' será executado.
-    -- (SET possuiLivros = 'Sim'): Define o valor da variável 'possuilivros' se houver livros na categoria.
+    -- (IF tt > 0 THEN): Condição- se o valor da variável 'tt' for maior que 0 o código dentro do ''THEN' será executado.
+    -- (SET possuilivro = 'Sim'): Define o valor da variável 'possuilivro' se houver livros na categoria.
     -- (ELSE): Caso contrário, se o valor de 'tt' for igual a 0, o que significa que não tem livros, será executado o código dentro do 'ELSE'.
-    -- (SET possuiLivros = 'Não): Define o valor da variável 'possuilivros' como 'Não' se não houver livros na categoria.
+    -- (SET possuilivro = 'Não): Define o valor da variável 'possuilivro' como 'Não' se não houver livros na categoria.
     -- (END IF): Encerra a estrutura de condição.
    
 DELIMITER ;
@@ -163,8 +163,8 @@ CALL sp_VerificarLivrosCategoria('Romance', @possuilivro);
 SELECT @possuilivro; 
 -- CALL: Ela chama a stored procedure. Neste caso, estamos chamando a stored procedure sp_VerificarLivrosCategoria.
 -- (Romance): Valor do parâmetro 'categoriaNome' que estamos passando para a stored procedure. Estamos verificando se a categoria com o nome 'Romance' possui livros.
--- (@possuilivros): Parâmetro de saída onde a resposta da stored procedure será armazenada. Depois da execução da stored procedure, a variável '@possuilivros' conterá "Sim" ou "Não", dependendo da presença de livros na categoria 'Romance'.
--- (SELECT): É usada para selecionar e recuperar dados do banco de dados.Nesse caso a instrução SELECT exibirá o valor de '@possuilivros', que será "Sim" se a categoria 'Romance' tiver livros ou "Não" se não tiver.
+-- (@possuilivro): Parâmetro de saída onde a resposta da stored procedure será armazenada. Depois da execução da stored procedure, a variável '@possuilivro' conterá "Sim" ou "Não", dependendo da presença de livros na categoria 'Romance'.
+-- (SELECT): É usada para selecionar e recuperar dados do banco de dados.Nesse caso a instrução SELECT exibirá o valor de '@possuilivro', que será "Sim" se a categoria 'Romance' tiver livros ou "Não" se não tiver.
 
 DELIMITER //
 -- 10. Livros e Seus Autores
@@ -200,3 +200,49 @@ DELIMITER ;
 -- Teste 
 CALL sp_VerificarLivrosCategoria('Romance', @possuilivro);
 SELECT @possuilivro;
+
+
+-- 9. Detalhamento da procedure sp_VerificarLivrosCategoria:
+DELIMITER //
+CREATE PROCEDURE sp_VerificarLivrosCategoria(IN categoriaNome VARCHAR(100), OUT possuiLivros VARCHAR(3))
+-- CREATE PROCEDURE: Cria uma stored procedure.
+-- sp_VerificarLivrosCategoria: Nome da stored procedure que está sendo criada.
+-- (IN categoriaNome VARCHAR(100), OUT possuiLivros VARCHAR(3)): Definimos os parâmetros, ela recebe um parâmetro de entrada 'IN' chamado 'categoriaNome' com varchar de no máximo de 100 caracteres e recebe um parâmetro de saída 'OUT' chamado possuiLivros com varchar de no máximo 3 caracteres.
+-- O 'IN' é para especificarmos o nome da categoria, já o OUT é para enviarmos a resposta de sim ou não.
+
+BEGIN
+-- 'BEGIN' ele marca o início do código da stored procedure (o corpo dela).
+
+    DECLARE tt INT;
+	-- (DECLARE tt INT;) declara uma variável chamada 'tt' do tipo inteiro (INT), ela armazena o número total dos livros na categoria que vamos especificar para saber se há livros ou não.
+    
+    SELECT COUNT(*) INTO tt
+    FROM Livro
+    INNER JOIN Categoria ON Livro.Categoria_ID = Categoria.Categoria_ID
+    WHERE Categoria.Nome = categoriaNome;
+    -- (SELECT COUNT(*) INTO tt): Conta o número de registros na tabela 'Livro' da condição que especificarmos.
+    -- (FROM Livro): Seleciona a tabela Livro.
+    -- (INNER JOIN Categoria ON Livro.Categoria_ID = Categoria.Categoria_ID): Junta a tabela 'Livro' e 'Categoria' com base na coluna 'Categoria_ID', o que relaciona os livros as suas categorias
+    -- (WHERE Categoria.Nome = categoriaNome): Filtra os registros onde o nome da categoria corresponde ao valor passado como parâmetro 'categoriaNome', e o resultado da contagem fica armazenado na variável 'tt'.
+    
+    IF tt > 0 THEN
+        SET possuilivro = 'Sim';
+    ELSE
+        SET possuilivro = 'Não';
+    END IF;
+    -- (IF tt > 0 THEN): Condição- se o valor da variável 'tt' for maior que 0 o código dentro do ''THEN' será executado.
+    -- (SET possuilivro = 'Sim'): Define o valor da variável 'possuilivro' se houver livros na categoria.
+    -- (ELSE): Caso contrário, se o valor de 'tt' for igual a 0, o que significa que não tem livros, será executado o código dentro do 'ELSE'.
+    -- (SET possuilivro = 'Não): Define o valor da variável 'possuilivro' como 'Não' se não houver livros na categoria.
+    -- (END IF): Encerra a estrutura de condição.
+   
+DELIMITER ;
+-- Delimitador padrão, usado antes e no final da stored procedure.
+
+-- Teste da sp_VerificarLivrosCategoria
+CALL sp_VerificarLivrosCategoria('Romance', @possuilivro);
+SELECT @possuilivro; 
+-- CALL: Ela chama a stored procedure. Neste caso, estamos chamando a stored procedure sp_VerificarLivrosCategoria.
+-- (Romance): Valor do parâmetro 'categoriaNome' que estamos passando para a stored procedure. Estamos verificando se a categoria com o nome 'Romance' possui livros.
+-- (@possuilivro): Parâmetro de saída onde a resposta da stored procedure será armazenada. Depois da execução da stored procedure, a variável '@possuilivro' conterá "Sim" ou "Não", dependendo da presença de livros na categoria 'Romance'.
+-- (SELECT): É usada para selecionar e recuperar dados do banco de dados.Nesse caso a instrução SELECT exibirá o valor de '@possuilivro', que será "Sim" se a categoria 'Romance' tiver livros ou "Não" se não tiver.
