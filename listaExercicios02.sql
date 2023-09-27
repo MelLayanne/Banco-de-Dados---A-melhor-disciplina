@@ -165,3 +165,16 @@ SELECT @possuilivro;
 -- (Romance): Valor do parâmetro 'categoriaNome' que estamos passando para a stored procedure. Estamos verificando se a categoria com o nome 'Romance' possui livros.
 -- (@possuilivros): Parâmetro de saída onde a resposta da stored procedure será armazenada. Depois da execução da stored procedure, a variável '@possuilivros' conterá "Sim" ou "Não", dependendo da presença de livros na categoria 'Romance'.
 -- (SELECT): É usada para selecionar e recuperar dados do banco de dados.Nesse caso a instrução SELECT exibirá o valor de '@possuilivros', que será "Sim" se a categoria 'Romance' tiver livros ou "Não" se não tiver.
+
+DELIMITER //
+-- 10. Livros e Seus Autores
+CREATE PROCEDURE sp_LivrosESeusAutores()
+BEGIN
+    SELECT Livro.Titulo, CONCAT(Autor.Nome, ' ', Autor.Sobrenome) AS Autor
+    FROM Livro
+    INNER JOIN Autor_Livro ON Livro.Livro_ID = Autor_Livro.Livro_ID
+    INNER JOIN Autor ON Autor_Livro.Autor_ID = Autor.Autor_ID;
+END //
+DELIMITER ;
+-- Teste 
+CALL sp_LivrosESeusAutores();
