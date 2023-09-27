@@ -57,3 +57,16 @@ DELIMITER ;
 -- Teste 
 CALL sp_VerificarLivrosCategoria('Romance', @possuilivro);
 SELECT @possuilivro;
+
+
+DELIMITER //
+-- 5. Lista de Livros por Ano
+CREATE PROCEDURE sp_LivrosAteAno(IN anoPublicacao INT)
+BEGIN
+    SELECT Titulo
+    FROM Livro
+    WHERE Ano_Publicacao <= anoPublicacao;
+END //
+DELIMITER ;
+-- Teste 
+CALL sp_LivrosAteAno(2007);
