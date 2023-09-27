@@ -178,3 +178,25 @@ END //
 DELIMITER ;
 -- Teste 
 CALL sp_LivrosESeusAutores();
+
+
+DELIMITER //
+-- 4. Verificação de Livros por Categoria
+CREATE PROCEDURE sp_VerificarLivrosCategoria(IN categoriaNome VARCHAR(100), OUT possuiLivros VARCHAR(3))
+BEGIN
+    DECLARE tt INT;
+    SELECT COUNT(*) INTO tt
+    FROM Livro
+    INNER JOIN Categoria ON Livro.Categoria_ID = Categoria.Categoria_ID
+    WHERE Categoria.Nome = categoriaNome;
+
+    IF tt > 0 THEN
+        SET possuilivro = 'Sim';
+    ELSE
+        SET possuilivro = 'Não';
+    END IF;
+END //
+DELIMITER ;
+-- Teste 
+CALL sp_VerificarLivrosCategoria('Romance', @possuilivro);
+SELECT @possuilivro;
