@@ -104,3 +104,18 @@ DELIMITER ;
 -- Teste 
 CALL sp_AdicionarLivro('A freira', 2, 2023, 320, 1, @mensagem);
 SELECT @mensagem;
+
+
+DELIMITER //
+-- 8. Autor Mais Antigo
+DROP PROCEDURE sp_Autorantigo;
+CREATE PROCEDURE sp_Autorantigo(OUT autorNome VARCHAR(255))
+BEGIN
+    SELECT CONCAT(Nome, ' ', Sobrenome) INTO autorNome
+    FROM Autor
+    WHERE Data_Nascimento = (SELECT MIN(Data_Nascimento) FROM Autor);
+    END //
+DELIMITER ;
+-- Teste 
+CALL sp_Autorantigo(@autormaisvelho);
+SELECT @autormaisvelho;
